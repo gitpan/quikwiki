@@ -1,0 +1,60 @@
+
+use User::pwent;
+
+$rcs_ok = `which rcs`;
+chomp $rcs_ok;
+
+$cwd = `pwd`;
+chomp $cwd;
+
+if ($rcs_ok) {
+print <<EOM;
+You have RCS installed.  Should I create a RCS subdirectory
+to hold the revisions? (y/n)?
+EOM
+}
+$c = <STDIN>;
+chomp $c;
+mkdir "RCS" if ($c =~ /y/i);
+
+`ln -s quikwiki.cgi index.cgi`;
+
+opendir DIR, "." or die "$!\n";
+my @files = readdir DIR;
+closedir DIR;
+
+print <<EOH;
+Enter the name of the user that should own the files.  If you're installing
+QuikWiki in your ~/public_html directory, enter your User ID (and make sure 
+that ExecCGI is enabled for that directory.  Consult your system 
+adminstrator).  If installing  QuikWiki publicly in your main HTML directory, 
+enter the User ID of the owner of the Web server processes.  This is the value 
+of the "User" directive in httpd.conf.
+EOH
+
+$user = <STDIN>;
+chomp $user;
+$pwent = getpwnam ($user);
+$uid = $pwent -> uid;
+$gid = $pwent -> gid;
+
+chown $uid, $gid, (@files);
+chown $uid, $gid, ('../quikwiki');
+
+if (length ($rcs_ok) && -d 'RCS') {
+    `cd $cwd && rcs -i -U -t-'QuikWiki HomePage' HomePage`;
+    `cd $cwd && ci -u HomePage`;
+    chown $uid, $gid, (qw{HomePage RCS/HomePage,v});
+}
+
+print <<EOH2;
+Done!  In a Web browser, enter
+
+      http://<server_name>/quikwiki/quikwiki.cgi
+
+or 
+
+      http://<server_name>/~<your_user_name>/quikwiki/quikwiki.cgi
+
+to use QuikWiki.
+EOH2

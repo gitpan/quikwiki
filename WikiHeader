@@ -1,0 +1,11 @@
+<%
+print qq{<table cellpadding="20" cellspacing="10">
+<tr valign="bottom">
+<td bgcolor="blue"><font size="3" color="white"><b>$word</b></font></td>
+</tr></table>
+<a href="?$word&action=edit">Edit</a>
+<a href="?HomePage">HomePage</a>
+<a href="?doc">Doc</a>
+<br><hr><br>
+};
+%>

@@ -1,0 +1,105 @@
+
+Installing QuikWiki
+-------------------
+
+
+QuikWiki is a simple Wiki that provides, in addition to editing,
+saving, and browsing Wiki pages, inline JPEG and GIF image display,
+version control for edited pages, and embedded Perl scripts.
+
+
+Requirements.
+
+Apache with mod_perl.  QuikWiki is untested with other HTTP servers,
+but I've attempted to keep the code close to plain HTTP and CGI, so it
+should work with other Web servers that can run Perl CGI scripts,
+though it's untested.
+
+Perl. Also pod2html, if you want to view the view the manual on-line.
+If you don't have pod2html, you probably don't have a complete Perl
+installation.  Complain to your system administrator.
+
+RCS, optionally, if you want QuikWiki to keep track of revisions.  If
+you don't have RCS or don't want to use it, QuikWiki will make copies
+of edited pages by adding a .bak extension.
+
+
+Quick Install
+
+   [If the quick install doesn't work for some reason, go to the
+   "Manual Install" section, below.]
+
+1. Unpack the tar file in the htdocs directory, your ~/public_html
+   directory, or the directory named by the "ServerRoot" directive 
+   in httpd.conf.  QuikWiki should also work in any 
+   server-accessible directory that has "Options ExecCGI" enabled in 
+   httpd.conf.
+
+2. Change to the quikwiki directory and run the configuration
+   script.  Configure will ask you if you want to create a directory 
+   to contain old revisions of pages, and the user ID for the
+   QuikWiki files and directories.  If installing in <ServerRoot>, 
+   you'll need to have write permissions there (e.g., you're the 
+   administrator).
+
+     # cd quickwiki
+     # perl configure   
+
+That's it!  Browse to the HomePage by typing, in your Web browser,
+
+   http://<server_address>/quikwiki/quikwiki.cgi
+
+Or, althernately,
+
+   http://<server_address>/quikwiki/
+
+Or if you installed QuikWiki in your public_html directory,
+
+   http://<server_address>/~<your_user_name>/quikwiki/quikwiki.cgi
+
+Substituting the actual network address of the server for
+<server_address>, and your actual user name for <your_user_name>.
+
+If you don't see a Revision number or Last Modified date/time
+in the page footer, edit and then save the page to create the 
+RCS repository.
+
+To view QuikWiki's Perl Online Documentation, browse to:
+
+    http://<server_address>/quikwiki/quikwiki.cgi?doc
+
+
+Manual Install
+
+1. Unpack the tar file in the htdocs directory, or the
+   directory named by the "ServerRoot" directive in the httpd.conf
+   file.  QuikWiki should also work in your ~/public_html directory
+   if "Options ExecCGI" in httpd.conf is enabled for the directory.
+
+2. Make quikwiki.cgi executable with the shell command:
+
+     chmod +x quikwiki/quikwiki.cgi
+
+3. (Optional)  If you want to use RCS to manage revisions,
+   create a quikwiki/RCS subdirectory.
+
+     mkdir quikwiki/RCS
+
+4. You can omit the script name if "DirectoryIndex index.cgi" is in 
+   the httpd.conf file.  You'll need to symlink quikwiki.cgi to 
+   index.cgi:
+
+     cd quikwiki
+     ln -s quikwiki.cgi index.cgi
+
+5. Make sure that Apache can read and write the files.  The
+   directories and files need to be owned by the same user as 
+   the HTTPD server process, or the owner of ~/public_html.  
+   The example uses "apache," but you should use the user name 
+   in the "User" http.conf directive if installing system-wide.
+
+     cd ..
+     chown -R apache quikwiki
+
+   Or even better, make the files and directories group-writeable.
+

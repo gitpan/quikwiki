@@ -1,0 +1,11 @@
+<%
+    return if ! $rcs_ok or ! -f $word;
+    my $c = `rlog $word`;
+    my ($revision) = grep /^head:.*$/, split /\n/, $c;
+    $revision =~ s/head: //;
+    $c = `rlog -r$revision $word`;
+    my ($modified) = grep /^date:.*$/, split /\n/, $c;
+    $modified =~ s/date: (.*?)\;.*$/$1/;
+    print qq{<br>Revision: <tt>$revision</tt>. 
+		 Last modified: <tt>$modified</tt>.<br>};
+%>

@@ -1,0 +1,36 @@
+<%
+# $Id: ODBC,v 1.1 2003/07/28 00:53:12 kiesling Exp $
+LOAD: {foreach $p (@INC) {
+  if (-f "$p/UnixODBC.pm") {require "$p/UnixODBC.pm"; last LOAD;}
+  }
+ print qq{Could not load library UnixODBC.pm.}; exit 1;
+}
+print qq{
+<form method="get" action="/wiki/ODBCTable.cgi">
+<table cellpadding="10">
+<tr>
+<td colspan="2" align="center"><b>ODBC Query<b></td>
+</tr>
+<tr>
+<td><label>User Name</label></td>
+<td><input size="30" type="text" name="username" value=""></td>
+</tr>
+<tr>
+<td><label>Password</label></td>
+<td><input size="30" type="password" name="password" value=""></td>
+</tr>
+<tr>
+<td><label>Data Source</label></td>
+<td><input size="30" type="text" name="dsn" value=""></td>
+</tr>
+<tr valign="top">
+<td><label>Query</label></td>
+<td><textarea name="sqlquery" cols="40" rows="15"></textarea></td>
+</tr>
+<tr>
+<td colspan="2" align="center"><input type="submit" value="Submit Query"></td>
+</tr>
+</table>
+</form><p>
+};
+%>
