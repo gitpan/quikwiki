@@ -13,47 +13,52 @@ Requirements.
 Apache with mod_perl.  QuikWiki is untested with other HTTP servers,
 but I've attempted to keep the code close to plain HTTP and CGI, so it
 should work with other Web servers that can run Perl CGI scripts,
-though it's untested.
+although it's untested.
 
 Perl. Also pod2html, if you want to view the view the manual on-line.
-If you don't have pod2html, you probably don't have a complete Perl
-installation.  Complain to your system administrator.
+Pod2html is part of the Perl source code distribution.  If you don't
+have pod2html, consult with your system administrator.
 
 RCS, optionally, if you want QuikWiki to keep track of revisions.  If
-you don't have RCS or don't want to use it, QuikWiki will make copies
-of edited pages by adding a .bak extension.
+you don't have RCS, or you don't want to use it to keep track of page
+revisions, QuikWiki will make copies of edited pages by adding a
+".bak" extension.
 
 
 Quick Install
 
-   [If the quick install doesn't work for some reason, go to the
-   "Manual Install" section, below.]
+   [If the quick install doesn't work for some reason, which is 
+   entirely possible depending on your Web server configuration, go 
+   to the "Manual Install" section, below.]
 
 1. Unpack the tar file in the htdocs directory, your ~/public_html
-   directory, or the directory named by the "ServerRoot" directive 
+   directory, or the directory named by the "DocumentRoot" directive 
    in httpd.conf.  QuikWiki should also work in any 
    server-accessible directory that has "Options ExecCGI" enabled in 
    httpd.conf.
 
-2. Change to the quikwiki directory and run the configuration
-   script.  Configure will ask you if you want to create a directory 
-   to contain old revisions of pages, and the user ID for the
-   QuikWiki files and directories.  If installing in <ServerRoot>, 
-   you'll need to have write permissions there (e.g., you're the 
-   administrator).
+   If upgrading, make sure to have a backup of the current installation.
 
-     # cd quickwiki
+2. Change to the quikwiki directory and run the configuration
+   script.  Configure will ask if you want to create a directory 
+   to contain old revisions of pages, and the user ID for the
+   QuikWiki files and directories.  If you're installing quikwiki 
+   in <DocumentRoot>, you'll need to have write permissions there 
+   e.g., you're the administrator).
+
+     # cd quickwiki-<version>
      # perl configure   
 
-That's it!  Browse to the HomePage by typing, in your Web browser,
+That's it!  (Or, that should it.) Browse to the HomePage by typing, in
+your Web browser,
 
    http://<server_address>/quikwiki/quikwiki.cgi
 
-Or, althernately,
+Or, alternately,
 
    http://<server_address>/quikwiki/
 
-Or if you installed QuikWiki in your public_html directory,
+Or, if you installed QuikWiki in your public_html directory,
 
    http://<server_address>/~<your_user_name>/quikwiki/quikwiki.cgi
 
@@ -72,7 +77,7 @@ To view QuikWiki's Perl Online Documentation, browse to:
 Manual Install
 
 1. Unpack the tar file in the htdocs directory, or the
-   directory named by the "ServerRoot" directive in the httpd.conf
+   directory named by the "DocumentRoot" directive in the httpd.conf
    file.  QuikWiki should also work in your ~/public_html directory
    if "Options ExecCGI" in httpd.conf is enabled for the directory.
 
@@ -89,7 +94,7 @@ Manual Install
    the httpd.conf file.  You'll need to symlink quikwiki.cgi to 
    index.cgi:
 
-     cd quikwiki
+     cd quikwiki-<version>
      ln -s quikwiki.cgi index.cgi
 
 5. Make sure that Apache can read and write the files.  The
@@ -101,5 +106,14 @@ Manual Install
      cd ..
      chown -R apache quikwiki
 
-   Or even better, make the files and directories group-writeable.
+   Or even better, make the files and directories group-writable.
 
+
+Licensing
+
+  Quikwiki is free software.  You can modify and distribute quikwiki
+  by using the same licensing terms as Perl itself.  Consult the file 
+  "Artistic" for details.
+
+  Questions, bug reports, and suggestions should be sent to the author,
+  <rkiesling@earthlink.net>.
