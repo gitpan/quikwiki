@@ -1,9 +1,11 @@
-'''QuikWiki.'''
+'''QuikWiki Version 1.3'''
 
 This is the QuikWiki HomePage.  
 
 You can edit this page by clicking on edit, above, or 
 entering in your browser: 
 
-  http://''server_name''/quikwiki/quikwiki.cgi&action=edit
+   '''http://''server_name''/quikwiki/quikwiki.cgi&action=edit'''
+
+For further information, click on the '''doc''' link above, or view the QuikReference page.
 

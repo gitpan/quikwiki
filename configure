@@ -1,4 +1,4 @@
-
+# $Id: configure,v 1.7 2004/02/21 15:52:21 kiesling Exp $
 use User::pwent;
 
 $rcs_ok = `which rcs`;
@@ -7,55 +7,289 @@ chomp $rcs_ok;
 $cwd = `pwd`;
 chomp $cwd;
 
-if ($rcs_ok) {
+@httpd_confs=(qw|/etc/httpd.conf /etc/apache/httpd.conf 
+	      /etc/apache/conf/httpd.conf
+	      /usr/local/apache/conf/httpd.conf 
+	      /usr/apache/conf/httpd.conf|);
+
+$httpd_conf_name = "";
+
+##
+## PERL
+##
+$app = qw/quikwiki.cgi/;
+
+$perl = `which perl`;
+chomp $perl;
+
+if (! length ($perl)) {
+    print STDERR "\nThe system could not find Perl. You need to make\n";
+    print STDERR "sure Perl is installed correctly and in a directory\n";
+    print STDERR "named by the \$PATH environment variable.\n";
+    exit 1;
+}
+
+
+$/ = undef;  # "slurp" mode
+## set the perl interpreter.
+print STDOUT "Setting application $app perl interpreter to $perl.\n";
+local $apptext;
+open IN, $app or die "Couldn't read $app: $!\n";
+$apptext = <IN>;
+close IN;
+$apptext =~ s"^\#\!.*?/perl.*?$"\#\!$perl"ism;
+open OUT, ">/tmp/$app.out" or 
+    die "Couldn't open $app.out for writing: $!\n";
+print OUT $apptext;
+close OUT;
+$/="\n";
+##
+## POD2HTML
+##
+print STDOUT "\nLooking for pod2html.\n";
+$pod2html = `which pod2html`;
+chomp $pod2html;
+if (! length ($pod2html)) {
+    print STDERR "\nThe system could not find pod2html. You may not\n";
+    print STDERR "be able to view the QuikWiki documentation.\n";
+}
+
+
+##
+## HTTP.CONF
+##
+
+foreach $h (@httpd_confs) {
+    if (-f $h) { $httpd_conf_name = $h; last; }
+}
+
+if (!length ($httpd_conf_name)) {
+    print "\nCouldn't find Apache Your Web server's httpd.conf file at\n";
+    foreach (@httpd_confs) {print "$_\n"; }
+    print "\nEnter the path name of http.conf:\n";
+    $httpd_conf_name = <STDIN>;
+    chomp $httpd_conf_name;
+    if (! -f $httpd_conf_name) {
+	print "Couldn't find, \"$httpd_conf_name,\" either.  You'll need\n";
+	print "to locate your system's httpd.conf before proceeding, or\n";
+	print "install QuikWiki in your ~/public_html directory.\n"
+    }
+}
+
+print "\nFound httpd.conf at: $httpd_conf_name.\n";
+
+
+$DocumentRoot = '';
+$AdminUser = '';
+$AdminGroup = '';
+$UserDir = '';
+$user = $ENV{LOGNAME};
+
+
+if (! defined open HTTPD_CONF, "$httpd_conf_name") { 
+    print "
+
+$! opening $httpd_conf_name.  You'll need to install 
+QuikWiki in your home directory, or else insure that your 
+Apache Web server configuration is correct.
+"
+} else {
+    print "\n";
+    while ($l = <HTTPD_CONF>) {
+	($DocumentRoot) = ($l =~ /DocumentRoot\s?(.*)/) if
+	    $l =~ /^DocumentRoot /;
+	($AdminUser) = ($l =~ /^User\s+(.*)/) if
+	    $l =~ /^User /;
+	($AdminGroup) = ($l =~ /^Group\s+(.*)/) if
+	    $l =~ /^Group /;
+	($UserDir) = ($l =~ /^\s*UserDir\s+(.*)/) if
+	    $l =~ /^\s*UserDir /;
+    }
+    chomp $DocumentRoot;
+    chomp $AdminUser;
+    chomp $AdminGroup;
+    chomp $UserDir;
+    print "Public document directory: $DocumentRoot\n";
+    print "Server user name: $AdminUser\n";
+    print "Server group name: $AdminGroup\n";
+    print "User directory name: $UserDir\n";
+}
+
+
+print <<EOM2;
+
+Do you want to install QuikWiki in:
+
+  1. The system's htdocs directory, $DocumentRoot. 
+  2. Your \$HOME directory's public HTML directory.
+
+? (1/2): 
+EOM2
+$system_or_home = <STDIN>;
+chomp $system_or_home;
+$system_or_home = ($system_or_home =~ /1/) ? 'system' : 'home';
+
+if ($rcs_ok || $rcs_ok !~ /^no rcs/) {
 print <<EOM;
+
 You have RCS installed.  Should I create a RCS subdirectory
-to hold the revisions? (y/n)?
+for revisions? (y/n)?
 EOM
+$use_rcs = <STDIN>;
+chomp $use_rcs;
 }
+
+##
+## Start installing
+##
+
+if ($system_or_home =~ /system/) {
+
+    if (-d "$DocumentRoot/quikwiki") {
+	print <<EOM4;
+
+
+There is already a $DocumentRoot/quikwiki directory.  You should
+back up this directory before proceeding.  
+
+Install anyway? (y/n)
+EOM4
 $c = <STDIN>;
-chomp $c;
-mkdir "RCS" if ($c =~ /y/i);
+	exit 1 if ($c =~ /n/i);
 
-`ln -s quikwiki.cgi index.cgi`;
+    }
 
-opendir DIR, "." or die "$!\n";
-my @files = readdir DIR;
-closedir DIR;
+   `mkdir $DocumentRoot/quikwiki`;
+   `cp HomePage WikiFooter WikiHeader $DocumentRoot/quikwiki`;
+   `cp eg/QuikReference $DocumentRoot/quikwiki`;
+   `cp /tmp/quikwiki.cgi.out $DocumentRoot/quikwiki/quikwiki.cgi`;
+   `chmod +x $DocumentRoot/quikwiki/quikwiki.cgi`;
+   `mkdir $DocumentRoot/quikwiki/RCS` if $use_rcs =~ /y/i;
+   `cd $DocumentRoot/quikwiki && ln -s quikwiki.cgi index.cgi`;
 
-print <<EOH;
-Enter the name of the user that should own the files.  If you're installing
-QuikWiki in your ~/public_html directory, enter your User ID (and make sure 
-that ExecCGI is enabled for that directory.  Consult your system 
-adminstrator).  If installing  QuikWiki publicly in your main HTML directory, 
-enter the User ID of the owner of the Web server processes.  This is the value 
-of the, "User," directive in httpd.conf.
-EOH
+   if (! length ($AdminUser)) {
+       print "
 
-$user = <STDIN>;
-chomp $user;
-$pwent = getpwnam ($user);
-$uid = $pwent -> uid;
-$gid = $pwent -> gid;
+Enter the name of the user that should own the QuikWiki files.  In the 
+system's public $DocumentRoot directory, this should be User ID of the 
+owner of the Web server processes, the value of the, \"User,\" directive 
+in, \"httpd.conf.\"  The User ID should also be shown in the output of, 
+\"top.\"
+";
+       $AdminUser = <STDIN>;
+       chomp $AdminUser;
+   }
 
-chown $uid, $gid, (@files);
-chown $uid, $gid, ('../quikwiki');
+   if (length ($rcs_ok) && ($use_rcs =~ /y/i)) {
+      `cd $DocumentRoot/quikwiki && rcs -i -U -t-'QuikWiki HomePage' HomePage`;
+      `cd $DocumentRoot/quikwiki && rcs -i -U -t-'QuikWiki Header' WikiHeader`;
+      `cd $DocumentRoot/quikwiki && rcs -i -U -t-'QuikWiki Footer' WikiFooter`;
+      `cd $DocumentRoot/quikwiki && rcs -i -U -t-'Reference page' QuikReference`;
+      `cd $DocumentRoot/quikwiki && ci -u -m"Installation" HomePage`;
+      `cd $DocumentRoot/quikwiki && ci -u -m"Installation" WikiHeader`;
+      `cd $DocumentRoot/quikwiki && ci -u -m"Installation" WikiFooter`;
+      `cd $DocumentRoot/quikwiki && ci -u -m"Installation" QuikReference`;
+   }
 
-if (length ($rcs_ok) && -d 'RCS') {
-    `cd $cwd && rcs -i -U -t-'QuikWiki HomePage' HomePage`;
-    `cd $cwd && ci -u HomePage`;
-    chown $uid, $gid, (qw{HomePage RCS/HomePage,v});
-}
+   `chown -R $AdminUser $DocumentRoot/quikwiki`;
+   `chgrp -R $AdminGroup $DocumentRoot/quikwiki` if length ($AdminGroup);
 
-print <<EOH2;
-
+   print "
 In a Web browser, enter
+
+      http://<server_name>/quikwiki
+
+or, depending on the Web server options
 
       http://<server_name>/quikwiki/quikwiki.cgi
 
-or 
+to use QuikWiki.
+"
 
-      http://<server_name>/~<your_user_name>/quikwiki/quikwiki.cgi
+} else {  # User's public HTML directory.
+    $/="\n";
+   if (! length ($UserDir)) {
+       print <<EOH5;
+
+Enter the name of the public HTML directory in your home directory.  If 
+you're not certain of the name, ask the Web server administrator.
+EOH5
+       $UserDir = <STDIN>;
+       chomp $UserDir;
+   }
+
+   local $userpath = $ENV{HOME} . "/$UserDir";
+
+    if (! -d $userpath) {
+	`mkdir $userpath`;
+	print <<EOM6;
+
+Creating $userpath.
+
+EOM6
+    }
+
+    if (-d "$userpath/quikwiki") {
+	print <<EOM4;
+
+
+There is already a $userpath/quikwiki directory.  You should
+back up this directory before proceeding.  
+
+Install anyway? (y/n)
+EOM4
+$c = <STDIN>;
+	exit 1 if ($c !~ /y/i);
+
+    }
+
+   `mkdir $userpath` if (! -d $userpath);
+   `mkdir "$userpath/quikwiki"` if (! -d "$userpath/quikwiki");
+   `mkdir "$userpath/quikwiki/RCS"` 
+	if (($use_rcs =~ /y/i) && (! -d "$userpath/quikwiki/RCS"));
+   `cp HomePage WikiFooter WikiHeader $userpath/quikwiki`;
+   `cp eg/QuikReference $userpath/quikwiki`;
+   `cp /tmp/quikwiki.cgi.out $userpath/quikwiki/quikwiki.cgi`;
+   `chmod +x $userpath/quikwiki/quikwiki.cgi`;
+
+print <<EOM5;
+
+Do you want to rename quikwiki.cgi to index.cgi instead of
+simply creating a symlink between them?  (y/n)
+EOM5
+	$c = <STDIN>;
+	if ($c =~ /y/i) {
+	   `cd $userpath/quikwiki && rm -f index.cgi && mv quikwiki.cgi index.cgi`;
+	} else {
+	   `cd $userpath/quikwiki && ln -s quikwiki.cgi index.cgi`;
+        }
+
+   if (length ($rcs_ok) && ($use_rcs =~ /y/i)) {
+      `cd $userpath/quikwiki && rcs -i -U -t-'QuikWiki HomePage' HomePage`;
+      `cd $userpath/quikwiki && rcs -i -U -t-'QuikWiki Header' WikiHeader`;
+      `cd $userpath/quikwiki && rcs -i -U -t-'QuikWiki Footer' WikiFooter`;
+      `cd $userpath/quikwiki && rcs -i -U -t-'Reference page' QuikReference`;
+      `cd $userpath/quikwiki && ci -u -m"Installation" HomePage`;
+      `cd $userpath/quikwiki && ci -u -m"Installation" WikiHeader`;
+      `cd $userpath/quikwiki && ci -u -m"Installation" WikiFooter`;
+      `cd $userpath/quikwiki && ci -u -m"Installation" QuikReference`;
+   }
+
+   `chown --reference=$ENV{HOME} -R $uid $userpath/quikwiki`;
+
+   print " In a Web browser, enter
+
+      http://<webserver>/~$user/quikwiki
+
+or, depending on the Web server and QuikWiki options
+
+      http://<webserver>/~$user/quikwiki/quikwiki.cgi
 
 to use QuikWiki.
-EOH2
+"
+}
+
+`rm -f /tmp/$app.out`;
+
+exit 0;
+

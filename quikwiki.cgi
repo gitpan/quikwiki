@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: quikwiki.cgi,v 1.8 2004/02/01 02:03:32 kiesling Exp $
+# $Id: quikwiki.cgi,v 1.18 2004/02/21 15:52:21 kiesling Exp $
 
 my $httpheader =<<ENDHTTP;
 Content-type: text/html
@@ -71,8 +71,28 @@ if ($word =~ /words/) {
     opendir DIR, '.' or do {w_pre ("words: $!"); return;};
     my @files = grep {/^[A-Z]/ && ! -d $_} readdir DIR;
     closedir DIR;
-    w_pre (join '<br>', @files);
-   exit 0;
+    @sortedwords = sort @files;
+    $wordspage = '';
+    foreach (@sortedwords) {
+	if (filetype ($_) =~ /text/) {
+	    $wordspage .= qq{<a href="?$_">$_</a><br>};
+	} else {
+#	    $wordspage .= "$_&nbsp;(". uc (filetype($_)) . ")<br>";
+	    $wordspage .= qq{<a href="?image&$_">$_</a><br>};
+	}
+    }
+    w_pre ($wordspage);
+    exit 0;
+}
+
+# ?image&<image_name>
+if ($word =~ /image/) {
+    no warnings;  # $imword only occurs here.
+    ($imword, $imname) = split /&/, $q;
+    use warnings;
+    $impage = qq{<p><img src="$imname" alt="$imname">};
+    w_out ($impage);
+    exit 0;
 }
 
 if ($action =~ /view/) {
@@ -118,7 +138,7 @@ sub w_write {
     print OUT $text;
     print OUT "\n" if $text !~ /\n$/;
     close OUT;
-    `ci -u -m'Revised by wiki.cgi' $name` if $rcs_ok;
+    `ci -u -m'User revision.' $name` if $rcs_ok;
 }
 
 sub w_pre {
@@ -153,12 +173,11 @@ sub w_eval {
 
 sub words {
     $page = $_[0];
-    my @p_words = split /\s|\r?\n/, $page;    
-    foreach my $st (split /\s|\r?\n|\'|\\|\"|\?|\.|\:|,/, $page) {
-	next if $st !~ /^[A-Z]/;
-	$page =~ s/([^"<])$st([^"])/$1<a href="?$st">$st<\/a>$2/ 
+    foreach my $st (split /\s|\r?\n|\'|\\|\"|\?|\.|\:|,|\*/, $page) {
+	next if $st !~ /^[A-Z]/ || ! -f $st;
+	$page =~ s/([^\w"<])$st([^\w"])/$1<a href="?$st">$st<\/a>$2/ 
 	    if (filetype ($st) =~ /text/);
-	$page =~ s/([^"<])$st([^"])/$1<img src="$st" alt="$st">$2/ 
+	$page =~ s/([^\w"<])$st([^\w"])/$1<img src="$st" alt="$st">$2/g
 	    if (filetype ($st) =~ /png|jpeg/);
     }
     return $page;
@@ -183,18 +202,25 @@ sub lines {
     $page =~ s/\'\'(.*?)\'\'/<i>$1<\/i>/smg;
     my $newpage = '';
     foreach my $l (split /(\n)/, $page) {
-	# Blank line.
-	if (substr ($l, 0, 1) eq ' ') {
-	    $l =~ s/ /\&nbsp\;/g;
+	if ($l =~ /^(\t|        )\*/) {
+	    $l =~ s/^(\t|        )\*/<li>/;
+	    $newpage .= $l;
+	} elsif (substr ($l, 0, 1) eq ' ') {
+	    local $i = 0;
+	    while ( substr($l, $i, 1) eq ' ') {
+		substr($l, $i++, 1, '&nbsp;');
+	    }
 	    $newpage .= "<tt>$l</tt><br>\n";
 	} elsif ($l =~ /^----/) {
-	    $newpage .= '<hr>';
+	    $l =~ s/^----//;
+	    $newpage .= ('<hr>' . $l);
 	} else {
 	    $newpage .= "$l";
 	} 
     }
     return $newpage;
 }
+
 
 __END__
 
@@ -280,9 +306,15 @@ Print the POD documentation.
 
 =head3 words
 
-Print a list of QuikWiki words.
+Display sorted list of words and links to pages.
 
   http://<server>/?words
+
+=head3 image
+
+Display an image on a separate page. 
+
+  http://<server>/?image&<image_name>
 
 =head2 Actions
 
@@ -326,6 +358,11 @@ formatting and are printed in monospaced <tt> font.
 
 Lines that begin with four or more hyphens are displayed as rules.
 
+=head3 Lists
+
+List items begin with a tab and an asterisk, or eight spaces and 
+an asterisk.
+
 =head2 Backups and Revisions
 
 QuikWiki uses RCS for revisions if the system has the B<rcs> and B<ci>
@@ -350,17 +387,19 @@ and, "WikiFooter."
 
 =head1 VERSION
 
-$Id: quikwiki.cgi,v 1.8 2004/02/01 02:03:32 kiesling Exp $
+$Id: quikwiki.cgi,v 1.18 2004/02/21 15:52:21 kiesling Exp $
 
 =head1 CREDITS
 
 The idea for QuikWiki, and a few of the coding tricks, came from Scott
-Walter's tinywiki, although the code is (slightly) less obfuscated.
-Most of the Wiki conventions are derived from WikiWiki.
+Walter's tinywiki, although the code is (slightly) less obfuscated.  
+Look for, "Perl Design Patterns," on the Web.
+
+The text markup conventions come from WikiWiki.
 
 Written by Robert Kiesling, rkies@cpan.org.
 
-Copyright 2003-2004 by Robert Kiesling.  QuikWiki is licensed using
+Copyright © 2003-2004 by Robert Kiesling.  QuikWiki is licensed under
 the same terms as Perl.  Refer to the file, "Artistic," for details.
 
 =cut

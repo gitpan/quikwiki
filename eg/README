@@ -1,0 +1,13 @@
+
+QuikWiki Additions
+------------------
+
+- QuikReference - A quick-reference page that displays QuikWiki text 
+  markup and some QuikWiki's words and commands.
+
+- ODBCTable.cgi - Prints the results of ODBC queries.  Requires 
+  UnixODBC.pm.
+
+$Id: README,v 1.3 2004/02/21 06:46:06 kiesling Exp $
+
+

@@ -1,0 +1,49 @@
+'''QuikWiki''' QuikReference Page.
+
+        * Return to the HomePage.
+
+  The URL for the HomePage is: 
+    '''http://''server_name''/quikwiki/quikwiki.cgi/?HomePage'''  
+
+  A shortcut is: 
+    '''http://''server_name''/quikwiki/quikwiki.cgi/?'''
+
+  Or even more briefly: 
+    '''http://''server_name''/quikwiki'''
+  if the Web server and QuikWiki configuration permit this.
+
+        * View a page named ''MyPage,'' or create it if it doesn't exist.
+
+  '''http://''server_name''/quikwiki/quikwiki.cgi/?MyPage'''
+
+
+        * Edit ''MyPage.''
+
+   '''http//''server_name''/quikwiki/quikwiki.cgi/?MyPage&action=edit'''
+
+
+        * Click on the '''Edit''' link above to view the markup tags on this page.  The text markup is similar to WikiWiki, and provides formatting that includes ''emphasized (italic),'' '''bold,''',
+
+   preformatted text,
+
+        * Lists,
+
+and horizontal rules.
+----
+
+Alternatively, enter the complete URL of the '''edit''' link above: 
+
+   '''http://''server_name''/quikwiki/quikwiki.cgi?QuikReference&action=edit'''.
+
+        * JPEG and GIF images are displayed in-line in pages, or separately using the '''image''' word.
+
+        * The '''words''' word lists all of the wiki words.  Enter:
+
+   '''http://''server_name''/quikwiki/quikwiki.cgi?words'''
+
+        * Page templates can contain embedded Perl scripts.  The files, '''WikiHeader,'''
+'''WikiFooter,''' and '''eg/ODBCTable.cgi''' (in the source archive) are examples.
+
+        * Click on the '''doc''' link above to view the manual.  The link uses the '''doc''' word:
+
+   '''http://''server_name''/quikwiki/quikwiki.cgi?doc'''
