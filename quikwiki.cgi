@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: quikwiki.cgi,v 1.4 2003/07/28 23:17:59 kiesling Exp $
+# $Id: quikwiki.cgi,v 1.8 2004/02/01 02:03:32 kiesling Exp $
 
 my $httpheader =<<ENDHTTP;
 Content-type: text/html
@@ -207,61 +207,72 @@ quikwiki.cgi - Simple Perl/CGI Wiki.
 
   # View pages
 
-  http://<host>/quikwiki/quikwiki.cgi?HomePage   # View HomePage
-  http://<host>/quikwiki/?HomePage               # Same as above.
-
+  http://<host>/quikwiki/quikwiki.cgi?HomePage   # View, "HomePage."
 
   # Edit pages
 
-  http://<host>/quikwiki/quikwiki.cgi?&action=edit       # Edit HomePage
+  http://<host>/quikwiki/quikwiki.cgi?&action=edit       # Edit, "HomePage."
 
-  http://<host>/quikwiki/quikwiki.cgi?MyPage&action=edit # Edit MyPage
-
-
-  # Create and edit page named "NewPage."
+  # Create and edit page named, "NewPage."
 
   http://<host>/quikwiki/quikwiki.cgi?NewPage&action=new
 
-  http://<host>/quikwiki/?NewPage                # Same as above
 
+
+  # If quickwiki.cgi is renamed or symlinked to index.cgi:
+
+  # View pages
+
+  http://<host>/quikwiki/?HomePage
+
+  # Edit pages
+
+  http://<host>/quikwiki/quikwiki.cgi?MyPage&action=edit # Edit, "MyPage."
+
+  # Create and edit page named, "NewPage."
+
+  http://<host>/quikwiki/?NewPage
 
 =head1 DESCRIPTION
 
-QuikWiki outputs HTML of pages formatted with Wiki markup tags (see
-"L<"Text Markup">"), with embedded links to Wiki "words."  The names
-of files that contains Wiki pages are words in QuikWiki.
+QuikWiki outputs HTML of text files ("pages") that contain Wiki markup
+tags (see, "L<"Text Markup">"), and Wiki, "words."  Words that
+correspond to the names of page files are output as HTML, "<a href>,"
+tags.
 
-Words start with uppercase letters and contain mixed-case alphanumeric
-characters.  These are valid words.
+Wiki words, by convention, start with uppercase letters and contain
+mixed-case alphanumeric characters.  These are valid words.
 
   HomePage
   AreaCode916
   TableOfContents
   Addresses
 
-If no word is given, wiki.cgi uses "HomePage." 
+If no word is given, "HomePage," is the default.
 
-To display a list of the words that QuikWiki knows about, use the
-"L<"words">" document option, below.
+To display a list of the words that QuikWiki knows about, use the,
+"L<"words">," document option.
 
-QuikWiki displays JPEG and PNG images in-line.
+QuikWiki displays JPEG and PNG image words in line. It can back up
+edited pages or keep versions in Revision Control System archives
+(see, "L<"Backups and Revisions">").
 
 =head2 Page Headers and Footers
 
-QuikWiki uses the file <tt>WikiHeader</tt> for page headers and
-<tt>WikiFooter</tt> as the page footer.  These files contain Perl code
-and are evaluated instead of displayed.  Refer to the section
-L<"Embedding Perl Programs"> below.
+QuikWiki uses the file, "WikiHeader," to format page headers and,
+"WikiFooter," for page footers.  These files contain Perl code and are
+evaluated instead of displayed.  (See, L<"Embedding Perl Programs">.)
 
 =head2 Self-Documentation
 
-These are the documentation commands that wiki.cgi recognizes.
+These are the documentation commands that QuikWiki recognizes.
 
 =head3 self
 
-Output the wiki.cgi source code.  Best done with 
+Output the QuikWiki source code.  To save in a text file, use a 
+shell command like,
 
-  lynx -dump -width 100 http://<server>/?self >wiki.cgi
+  lynx -dump -width 100 http://<server>/?self >quikwiki.cgi
 
 =head3 doc | pod
 
@@ -287,8 +298,8 @@ Open the editor to create a new page.
 
 =head3 save
 
-Save a page, with backup or revision.  See the section
-"Backups and Revisions," below.
+Save a page, with backup or revision.  See, "L<"Backups and Revisions.">."
+
 
 =head3 edit
 
@@ -309,46 +320,48 @@ I<Emphasized> (italic) text begins and ends with two single quotes
 =head3 Preformatted Text
 
 Lines that begin with one or more spaces maintain their
-formatting and are printed in a monospaced <tt> font.
+formatting and are printed in monospaced <tt> font.
 
 =head3 Horizontal Rules
 
-Lines that begin with four or more hyphens are formatted as
-horizontal rules.
+Lines that begin with four or more hyphens are displayed as rules.
 
 =head2 Backups and Revisions
 
-QuikWiki uses RCS for revisions if you have B<rcs> and B<ci> programs,
-and you've created a B<RCS> subdirectory under wiki.cgi's directory.
-Make sure that the Web server can write to the RCS subdirectory.
+QuikWiki uses RCS for revisions if the system has the B<rcs> and B<ci>
+programs, and you've created a B<RCS> subdirectory under QuikWiki's
+document directory.  Make sure that the Web server can write to the
+RCS subdirectory and archive.
 
-At the moment, RCS uses non-strict locking.
+At the moment, QuikWiki uses non-strict locking for RCS revisions.
 
 If you don't want to use RCS, don't make a RCS subdirectory, and
-wiki.cgi will rename the previous version of the page with a .bak
+QuikWiki will rename the previous version of the page with a, ".bak,"
 extension.
 
 =head2 Embedding Perl
 
-If a page contains "<%" and "%>", it gets eval'd
-instead of displayed.  You can embed Perl code in a page, and
-wiki.cgi will output the results.
+Pages that contain, "<%" and "%>", get eval'd instead of displayed.
+You can embed Perl code in a page, and QuikWiki eval's the script and
+outputs the results.
 
-For examples of embedded Perl, look at the files "WikiHeader"
-and "WikiFooter."
+For examples of embedded Perl, look at the files, "WikiHeader,"
+and, "WikiFooter."
 
 =head1 VERSION
 
-Current Version: $Revision: 1.4 $
+$Id: quikwiki.cgi,v 1.8 2004/02/01 02:03:32 kiesling Exp $
 
 =head1 CREDITS
 
-The idea for wiki.cgi, and a few of the coding tricks, came from Scott
-Walter's tinywiki, but the code in wiki.cgi is (slightly) less
-obfuscated.  Most of the Wiki conventions are derived from
-WikiWiki.
+The idea for QuikWiki, and a few of the coding tricks, came from Scott
+Walter's tinywiki, although the code is (slightly) less obfuscated.
+Most of the Wiki conventions are derived from WikiWiki.
 
-Written by Robert Kiesling <rkiesling@earthlink.net>.
+Written by Robert Kiesling, rkies@cpan.org.
+
+Copyright 2003-2004 by Robert Kiesling.  QuikWiki is licensed using
+the same terms as Perl.  Refer to the file, "Artistic," for details.
 
 =cut
 

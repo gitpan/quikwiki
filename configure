@@ -29,7 +29,7 @@ QuikWiki in your ~/public_html directory, enter your User ID (and make sure
 that ExecCGI is enabled for that directory.  Consult your system 
 adminstrator).  If installing  QuikWiki publicly in your main HTML directory, 
 enter the User ID of the owner of the Web server processes.  This is the value 
-of the "User" directive in httpd.conf.
+of the, "User," directive in httpd.conf.
 EOH
 
 $user = <STDIN>;
@@ -48,7 +48,8 @@ if (length ($rcs_ok) && -d 'RCS') {
 }
 
 print <<EOH2;
-Done!  In a Web browser, enter
+
+In a Web browser, enter
 
       http://<server_name>/quikwiki/quikwiki.cgi
 

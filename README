@@ -5,52 +5,53 @@ Installing QuikWiki
 
 QuikWiki is a simple Wiki that provides, in addition to editing,
 saving, and browsing Wiki pages, inline JPEG and GIF image display,
-version control for edited pages, and embedded Perl scripts.
+version control for edited pages, and embedded Perl page templates.
 
 
 Requirements.
 
-Apache with mod_perl.  QuikWiki is untested with other HTTP servers,
-but I've attempted to keep the code close to plain HTTP and CGI, so it
+Apache with mod_perl.  QuikWiki is untested with other HTTP servers.
+The program tries to adhere to generic HTTP and CGI protocols.  QuikWiki
 should work with other Web servers that can run Perl CGI scripts,
 although it's untested.
 
 Perl. Also pod2html, if you want to view the view the manual on-line.
 Pod2html is part of the Perl source code distribution.  If you don't
-have pod2html, consult with your system administrator.
+have pod2html, consult your system administrator.
 
-RCS, optionally, if you want QuikWiki to keep track of revisions.  If
-you don't have RCS, or you don't want to use it to keep track of page
-revisions, QuikWiki will make copies of edited pages by adding a
-".bak" extension.
+Optionally, Revision Control System, if you want QuikWiki to keep
+track of revisions.  Without RCS, QuikWiki makes backup copies of
+edited pages by adding a ".bak" extension.
 
 
 Quick Install
 
    [If the quick install doesn't work for some reason, which is 
-   entirely possible depending on your Web server configuration, go 
-   to the "Manual Install" section, below.]
+   entirely possible because of the wide variety of Web server 
+   configuration, go to the, "Manual Install," section, below.]
 
-1. Unpack the tar file in the htdocs directory, your ~/public_html
-   directory, or the directory named by the "DocumentRoot" directive 
-   in httpd.conf.  QuikWiki should also work in any 
-   server-accessible directory that has "Options ExecCGI" enabled in 
-   httpd.conf.
+1. Unpack the tar file in your ~/public_html subdirectory, or, 
+   the subdirectory named by the, "DocumentRoot," directive 
+   in httpd.conf.  The latter should be, "htdocs," if you built 
+   and installed Apache from the source code distribution.  
+   QuikWiki should also work in any server-accessible directory 
+   that has, "Options ExecCGI," enabled in httpd.conf or a 
+   .htaccess file.
 
-   If upgrading, make sure to have a backup of the current installation.
+   If upgrading, make sure to back up the directory.
 
 2. Change to the quikwiki directory and run the configuration
    script.  Configure will ask if you want to create a directory 
    to contain old revisions of pages, and the user ID for the
    QuikWiki files and directories.  If you're installing quikwiki 
-   in <DocumentRoot>, you'll need to have write permissions there 
-   e.g., you're the administrator).
+   in <DocumentRoot>, you'll need to have write permissions in that
+   directory (i.e., you're the administrator).
 
      # cd quickwiki-<version>
      # perl configure   
 
-That's it!  (Or, that should it.) Browse to the HomePage by typing, in
-your Web browser,
+That's it!  (Or, that should be it.) Browse to the HomePage by typing,
+in your Web browser,
 
    http://<server_address>/quikwiki/quikwiki.cgi
 
@@ -58,28 +59,32 @@ Or, alternately,
 
    http://<server_address>/quikwiki/
 
-Or, if you installed QuikWiki in your public_html directory,
+If you installed QuikWiki in your ~/public_html directory,
 
    http://<server_address>/~<your_user_name>/quikwiki/quikwiki.cgi
 
 Substituting the actual network address of the server for
 <server_address>, and your actual user name for <your_user_name>.
 
-If you don't see a Revision number or Last Modified date/time
-in the page footer, edit and then save the page to create the 
-RCS repository.
+If using RCS, and you don't see a Revision number or Last Modified
+date/time in the page footer, edit and then save the page to create
+the RCS repository.  If you have trouble saving the revision, 
+double-check the permissions of the page, the RCS subdirectory, 
+and the RCS archive.
 
 To view QuikWiki's Perl Online Documentation, browse to:
 
     http://<server_address>/quikwiki/quikwiki.cgi?doc
 
+or click on the, "doc," link in the page header.
+
 
 Manual Install
 
-1. Unpack the tar file in the htdocs directory, or the
-   directory named by the "DocumentRoot" directive in the httpd.conf
-   file.  QuikWiki should also work in your ~/public_html directory
-   if "Options ExecCGI" in httpd.conf is enabled for the directory.
+1. Unpack the tar file in the htdocs directory, or the directory 
+   named by the "DocumentRoot" directive in the httpd.conf file.  
+   QuikWiki should also work in your ~/public_html directory if 
+   "Options ExecCGI" in httpd.conf is enabled for the directory.
 
 2. Make quikwiki.cgi executable with the shell command:
 
@@ -90,30 +95,34 @@ Manual Install
 
      mkdir quikwiki/RCS
 
-4. You can omit the script name if "DirectoryIndex index.cgi" is in 
-   the httpd.conf file.  You'll need to symlink quikwiki.cgi to 
-   index.cgi:
+4. You can omit the script name if "DirectoryIndex index.cgi" is set 
+   in httpd.conf or the directory's .htaccess file.  You'll need to 
+   symlink quikwiki.cgi to index.cgi:
 
      cd quikwiki-<version>
      ln -s quikwiki.cgi index.cgi
 
 5. Make sure that Apache can read and write the files.  The
    directories and files need to be owned by the same user as 
-   the HTTPD server process, or the owner of ~/public_html.  
-   The example uses "apache," but you should use the user name 
-   in the "User" http.conf directive if installing system-wide.
+   the HTTPD server process or the owner of ~/public_html.  This 
+   example uses, "apache," but the owner should be the user 
+   named in the, "User," http.conf directive if installing 
+   system-wide.
 
      cd ..
      chown -R apache quikwiki
 
    Or even better, make the files and directories group-writable.
 
+   If you have trouble saving page revisions, double check the 
+   ownership and permissions of the quikwiki and RCS subdirectories,
+   the page itself, and the RCS archive.
 
 Licensing
 
-  Quikwiki is free software.  You can modify and distribute quikwiki
-  by using the same licensing terms as Perl itself.  Consult the file 
+  Quikwiki is free software.  You can modify and distribute QuikWiki
+  using the same licensing terms as Perl itself.  Consult the file 
   "Artistic" for details.
 
   Questions, bug reports, and suggestions should be sent to the author,
-  <rkiesling@earthlink.net>.
+  rkies@cpan.org.
