@@ -1,6 +1,8 @@
-#!/usr/bin/perl -w
+#!/usr/bin/perl 
 
-# $Id: quikwiki.cgi,v 1.18 2004/02/21 15:52:21 kiesling Exp $
+# $Id: quikwiki.cgi,v 1.25 2004/05/09 02:26:57 kiesling Exp $
+
+use warnings;
 
 my $httpheader =<<ENDHTTP;
 Content-type: text/html
@@ -8,14 +10,19 @@ Content-type: text/html
 ENDHTTP
 
 my $starthtml =<<ENDTITLE;
-<html><head><title>QuikWiki!</title></head><body bgcolor="white">
+<html><head><title>QuikWiki!</title>
+<style type="text/css">
+BODY {font-family: sans-serif; font-size: 11 px; } 
+</style>
+</head><body bgcolor="white">
 ENDTITLE
 
 my $endhtml=<<ENDENDHTML;
 </body></html>
 ENDENDHTML
 
-my $rcs_ok = (-d 'RCS') && length (`which rcs`) ? 1 : 0;
+my $rcs_path = `which rcs`;
+my $rcs_ok = ((-d 'RCS') && (length($rcs_path) && $rcs_path !~ /no rcs/))?1:0;
 
 my $s = $ENV{SERVER_NAME};
 my $q = $ENV{QUERY_STRING};
@@ -77,7 +84,6 @@ if ($word =~ /words/) {
 	if (filetype ($_) =~ /text/) {
 	    $wordspage .= qq{<a href="?$_">$_</a><br>};
 	} else {
-#	    $wordspage .= "$_&nbsp;(". uc (filetype($_)) . ")<br>";
 	    $wordspage .= qq{<a href="?image&$_">$_</a><br>};
 	}
     }
@@ -87,16 +93,16 @@ if ($word =~ /words/) {
 
 # ?image&<image_name>
 if ($word =~ /image/) {
-    no warnings;  # $imword only occurs here.
+    no warnings;
     ($imword, $imname) = split /&/, $q;
-    use warnings;
+    no warnings;
     $impage = qq{<p><img src="$imname" alt="$imname">};
     w_out ($impage);
     exit 0;
 }
 
 if ($action =~ /view/) {
-    w_out ($page); 
+    w_out ($page);
     exit 0;
 }
 
@@ -156,8 +162,7 @@ sub w_out {
     $page = lines($page);
     print $httpheader . $starthtml;
     w_eval ('WikiHeader') if -f 'WikiHeader';
-    w_eval ($word) if $page =~ s/\<\%|\%\>//gm;
-    print qq|$page<p>|;
+    if ($page =~ s/\<\%|\%\>//gm) {w_eval($word); } else {print qq|$page<p>|;}
     w_eval ('WikiFooter') if -f 'WikiFooter';
     print $endhtml;
     exit 0;
@@ -230,43 +235,38 @@ quikwiki.cgi - Simple Perl/CGI Wiki.
 
 =head1 SYNOPSIS
 
+  # View the page named, "HomePage."
+  http://<host>/quikwiki/quikwiki.cgi?HomePage   
 
-  # View pages
-
-  http://<host>/quikwiki/quikwiki.cgi?HomePage   # View, "HomePage."
-
-  # Edit pages
-
-  http://<host>/quikwiki/quikwiki.cgi?&action=edit       # Edit, "HomePage."
+  # Edit the page, "HomePage."
+  http://<host>/quikwiki/quikwiki.cgi?&action=edit
 
   # Create and edit page named, "NewPage."
-
   http://<host>/quikwiki/quikwiki.cgi?NewPage&action=new
 
+  # View the QuikReference page.
+  http://<host>/quikwiki/quikwiki.cgi?QuikReference
 
 
   # If quickwiki.cgi is renamed or symlinked to index.cgi:
 
-  # View pages
-
   http://<host>/quikwiki/?HomePage
 
-  # Edit pages
-
-  http://<host>/quikwiki/quikwiki.cgi?MyPage&action=edit # Edit, "MyPage."
+  # Edit the page named, "MyPage."  
+  http://<host>/quikwiki/?MyPage&action=edit 
 
   # Create and edit page named, "NewPage."
-
   http://<host>/quikwiki/?NewPage
 
 =head1 DESCRIPTION
 
 QuikWiki outputs HTML of text files ("pages") that contain Wiki markup
-tags (see, "L<"Text Markup">"), and Wiki, "words."  Words that
-correspond to the names of page files are output as HTML, "<a href>,"
-tags.
+tags (see, "L<"Text Markup">") and references to other pages and
+images ("words").  QuikWiki's words correspond to page and image
+files.  When displayed, word references appear in HTML B<E<lt>a
+hrefE<gt>> tags.
 
-Wiki words, by convention, start with uppercase letters and contain
+By convention Wiki words start with uppercase letters and contain
 mixed-case alphanumeric characters.  These are valid words.
 
   HomePage
@@ -274,29 +274,34 @@ mixed-case alphanumeric characters.  These are valid words.
   TableOfContents
   Addresses
 
-If no word is given, "HomePage," is the default.
+"L<"Documentation Words">" and "L<"Action Words">," tell QuikWiki
+which action to take when displaying pages.
+
+URL parameters provide page and action words. If the URL does not
+contain arguments, B<HomePage> is the default page and B<view> is the
+default action word.  Refer to "L<"SYNOPSIS">," above.
 
 To display a list of the words that QuikWiki knows about, use the,
-"L<"words">," document option.
+"L<"words">," word.
 
-QuikWiki displays JPEG and PNG image words in line. It can back up
-edited pages or keep versions in Revision Control System archives
-(see, "L<"Backups and Revisions">").
+QuikWiki replaces JPEG and PNG words with the images and can display
+images separately with the L<"image"> word. 
 
-=head2 Page Headers and Footers
+Optionally, Revision Control System, if installed, can store page
+revisions. (See, "L<"Backups and Revisions">").
 
-QuikWiki uses the file, "WikiHeader," to format page headers and,
-"WikiFooter," for page footers.  These files contain Perl code and are
-evaluated instead of displayed.  (See, L<"Embedding Perl Programs">.)
+The template files, "WikiHeader," and, "WikiFooter," format page
+headers and footers.  These files contain Perl code and are evaluated
+instead of displayed.  (See, L<"Embedding Perl">.)
 
-=head2 Self-Documentation
+=head2 Documentation Words
 
-These are the documentation commands that QuikWiki recognizes.
+These are the documentation words that QuikWiki recognizes.
 
 =head3 self
 
 Output the QuikWiki source code.  To save in a text file, use a 
-shell command like,
+shell command similar to the following.
 
   lynx -dump -width 100 http://<server>/?self >quikwiki.cgi
 
@@ -310,32 +315,27 @@ Display sorted list of words and links to pages.
 
   http://<server>/?words
 
+=head2 Action Words
+
+These are the action words that QuikWiki recognizes.
+
+=head3 edit
+
+Display the editor form and edit a page.
+
 =head3 image
 
 Display an image on a separate page. 
 
   http://<server>/?image&<image_name>
 
-=head2 Actions
+=head3 new
 
-These are the actions that QuikWiki recognizes.
+Create and edit a new page.
 
 =head3 view 
 
 Display the page - this is the default.
-
-=head3 new
-
-Open the editor to create a new page.
-
-=head3 save
-
-Save a page, with backup or revision.  See, "L<"Backups and Revisions.">."
-
-
-=head3 edit
-
-Open the editor form and edit the page text.
 
 =head2 Text Markup
 
@@ -358,7 +358,7 @@ formatting and are printed in monospaced <tt> font.
 
 Lines that begin with four or more hyphens are displayed as rules.
 
-=head3 Lists
+=head3 List Items
 
 List items begin with a tab and an asterisk, or eight spaces and 
 an asterisk.
@@ -366,34 +366,44 @@ an asterisk.
 =head2 Backups and Revisions
 
 QuikWiki uses RCS for revisions if the system has the B<rcs> and B<ci>
-programs, and you've created a B<RCS> subdirectory under QuikWiki's
-document directory.  Make sure that the Web server can write to the
-RCS subdirectory and archive.
+programs, and the document directory contains a B<RCS> subdirectory.
+Make sure that the Web server can write to the RCS subdirectory and
+archive.
 
-At the moment, QuikWiki uses non-strict locking for RCS revisions.
+QuikWiki uses non-strict locking for RCS revisions.
 
-If you don't want to use RCS, don't make a RCS subdirectory, and
-QuikWiki will rename the previous version of the page with a, ".bak,"
-extension.
+Without RCS or a RCS subdirectory, QuikWiki renames previous versions
+of the page with a B<.bak> extension.
 
 =head2 Embedding Perl
 
-Pages that contain, "<%" and "%>", get eval'd instead of displayed.
-You can embed Perl code in a page, and QuikWiki eval's the script and
-outputs the results.
+Pages that contain, "<%" and "%>", get evaluated instead of displayed.
+Pages with embedded Perl code can generate dynamic content.  Here is
+a page that displays, "Hello, World!" and the date and time.
 
-For examples of embedded Perl, look at the files, "WikiHeader,"
-and, "WikiFooter."
+  <%
+    $t = localtime ();
+    $s = qq{Hello, World! The date and time is '''$t'''.};
+    print lines($s);
+  %>
+
+Values and operations are accessible via internal variables and
+functions.  The variable B<$word>, for example, is the name of the
+currently displayed page, and B<$s> is the name of the HTTP server.
+The function B<line($pagetext)> performs markup formatting.  Scripts
+can also define their own variables.
+
+The templates, "WikiHeader," and, "WikiFooter," use embedded Perl to
+format page Headers and Footers.
 
 =head1 VERSION
 
-$Id: quikwiki.cgi,v 1.18 2004/02/21 15:52:21 kiesling Exp $
+$Id: quikwiki.cgi,v 1.25 2004/05/09 02:26:57 kiesling Exp $
 
 =head1 CREDITS
 
 The idea for QuikWiki, and a few of the coding tricks, came from Scott
 Walter's tinywiki, although the code is (slightly) less obfuscated.  
-Look for, "Perl Design Patterns," on the Web.
 
 The text markup conventions come from WikiWiki.
 

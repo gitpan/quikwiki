@@ -271,6 +271,15 @@ to run QuikWiki or any Perl CGI script.
   </Directory>
 
 
+  # In a QuikWiki subdirectory, you can set options in a 
+  # .htaccess file.
+  Options ExecCGI
+
+
+  # But this must still be allowed in httpd.conf:
+  AllowOverride Options
+
+
 Licensing
 
   Quikwiki is free software.  You can modify and distribute QuikWiki
@@ -281,4 +290,4 @@ Licensing
   reports, and suggestions should be sent to the author, 
   rkies@cpan.org.
 
-$Id: README,v 1.12 2004/02/22 00:47:58 kiesling Exp $
+$Id: README,v 1.13 2004/02/23 19:51:08 kiesling Exp $
