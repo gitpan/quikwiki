@@ -2,7 +2,7 @@
 
         * Return to the HomePage.
 
-  The URL for the HomePage is: 
+  The URL of the HomePage is: 
     '''http://''server_name''/quikwiki/quikwiki.cgi/?HomePage'''  
 
   A shortcut is: 
@@ -12,7 +12,7 @@
     '''http://''server_name''/quikwiki'''
   if the Web server and QuikWiki configuration permit this.
 
-        * View a page named ''MyPage,'' or create it if it doesn't exist.
+        * View a page named, for example, ''MyPage.''  Create ''MyPage'' if it doesn't exist.
 
   '''http://''server_name''/quikwiki/quikwiki.cgi/?MyPage'''
 
@@ -22,28 +22,31 @@
    '''http//''server_name''/quikwiki/quikwiki.cgi/?MyPage&action=edit'''
 
 
-        * Click on the '''Edit''' link above to view the markup tags on this page.  The text markup is similar to WikiWiki, and provides formatting that includes ''emphasized (italic),'' '''bold,''',
+        * Click on the '''Edit''' link, above, to view the markup 
+tags in the text.  The markup is similar to WikiWiki, and provides 
+formatting that includes ''emphasized (italic),'' '''bold,''',
 
    preformatted text,
 
-        * Lists,
+        * List items,
 
 and horizontal rules.
 ----
 
-Alternatively, enter the complete URL of the '''edit''' link above: 
+   The complete URL of the '''Edit''' link, above, is: 
 
    '''http://''server_name''/quikwiki/quikwiki.cgi?QuikReference&action=edit'''.
 
-        * JPEG and GIF images are displayed in-line in pages, or separately using the '''image''' word.
+        * Words that refer to JPEG or GIF image files display the image.  To view images separately, use the ''image'' word.
 
-        * The '''words''' word lists all of the wiki words.  Enter:
+        * The ''words'' word lists all of the wiki words.  Enter:
 
    '''http://''server_name''/quikwiki/quikwiki.cgi?words'''
 
-        * Page templates can contain embedded Perl scripts.  The files, '''WikiHeader,'''
-'''WikiFooter,''' and '''eg/ODBCTable.cgi''' (in the source archive) are examples.
+        * Pages and templates can contain embedded Perl scripts; for example,
+the files, '''WikiHeader,''' '''WikiFooter,''' and the pages in 
+the ''eg/'' subdirectory.
 
-        * Click on the '''doc''' link above to view the manual.  The link uses the '''doc''' word:
+        * Click on the '''Doc''' link above to view the manual.  The link uses the ''doc'' word:
 
    '''http://''server_name''/quikwiki/quikwiki.cgi?doc'''

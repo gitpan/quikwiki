@@ -1,6 +1,6 @@
 #!/usr/bin/perl 
 
-# $Id: quikwiki.cgi,v 1.25 2004/05/09 02:26:57 kiesling Exp $
+# $Id: quikwiki.cgi,v 1.28 2004/05/29 10:19:37 kiesling Exp $
 
 use warnings;
 
@@ -46,7 +46,7 @@ $action = ($action and -f $word) ? $action : ((! -f $word ) ? 'edit' : 'view');
 my $page =  (-f $word) ? w_read ($word) : "Describe $word here.";
 
 my $editor = <<ENDEDIT;
-<form method="post" action="$scriptname">
+<form method="post" action="?$word">
 <input type="hidden" name="newname" value="$word">
 <textarea name="text" cols="80" rows="30">$page</textarea>
 <input type="hidden" name="action" value="save">
@@ -171,9 +171,15 @@ sub w_out {
 sub w_eval {
     my $file = $_[0];
     my $script = w_read ($file);
-    $script =~ s/\<\%|\%\>//gm;
-    eval $script;
-    print ('<br>'. $@.'<br>') if $@;
+    while ($script =~ /\<\%.*?\%\>/s) {
+	my ($text, $expr, $rest) = 
+	    ($script =~ /^(.*?)\<\%(.*?)\%\>(.*)$/s);
+	my $l = lines ($text); print $l;
+	eval $expr;
+	print ('<br>'. $@.'<br>') if $@;
+	$script = $rest;
+    }
+    print lines( $script);
 }
 
 sub words {
@@ -379,13 +385,14 @@ of the page with a B<.bak> extension.
 
 Pages that contain, "<%" and "%>", get evaluated instead of displayed.
 Pages with embedded Perl code can generate dynamic content.  Here is
-a page that displays, "Hello, World!" and the date and time.
+a page that displays, "Hello, World!" and the date and time in bold type.
 
-  <%
-    $t = localtime ();
-    $s = qq{Hello, World! The date and time is '''$t'''.};
-    print lines($s);
-  %>
+Hello, world!  The data and time is:
+<%
+  $t=localtime ();
+  $s = qq{'''$t'''.};
+  print lines ($s);
+%>
 
 Values and operations are accessible via internal variables and
 functions.  The variable B<$word>, for example, is the name of the
@@ -398,7 +405,7 @@ format page Headers and Footers.
 
 =head1 VERSION
 
-$Id: quikwiki.cgi,v 1.25 2004/05/09 02:26:57 kiesling Exp $
+$Id: quikwiki.cgi,v 1.28 2004/05/29 10:19:37 kiesling Exp $
 
 =head1 CREDITS
 

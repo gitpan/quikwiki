@@ -1,0 +1,8 @@
+Hello, world!  The data and time is:
+<%
+  $t=localtime ();
+  $s = qq{'''$t'''.}; # Boldface type
+  print lines ($s);
+%>
+
+

@@ -1,11 +1,20 @@
-'''QuikWiki Version 1.4'''
+'''QuikWiki Version 1.5'''
 
 This is the QuikWiki HomePage.  
 
-You can edit this page by clicking on edit, above, or 
-entering in your browser: 
+To edit this page click on '''Edit,''' above, or: 
 
-   '''http://''server_name''/quikwiki/quikwiki.cgi&action=edit'''
+<%
+ print qq{<a href="http://$s/quikwiki/?$word&action=edit">};
+ print qq{http://$s/quikwiki/quikwiki.cgi&action=edit</a>};
+%>
 
-For further information, click on the '''doc''' link above, or view the QuikReference page.
+The documentation is viewable on line. Click on '''Doc,''' above.
+
+For a quick overview , click on  
+<%
+ print qq{<a href="http://$s/quikwiki/?QuikReference">};
+ print qq{QuikReference.</a>};
+%>
+
 
