@@ -1,9 +1,10 @@
 <%
-    return if ! $rcs_ok or ! -f $word;
-    my $c = `rlog $word`;
+    my $path = w_f ($word);
+    return if ! $rcs_ok or ! $path;
+    my $c = `rlog $path`;
     my ($revision) = grep /^head:.*$/, split /\n/, $c;
     $revision =~ s/head: //;
-    $c = `rlog -r$revision $word`;
+    $c = `rlog -r$revision $path`;
     my ($modified) = grep /^date:.*$/, split /\n/, $c;
     $modified =~ s/date: (.*?)\;.*$/$1/;
     print qq{<br>Revision: <tt>$revision</tt>. 

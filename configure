@@ -1,4 +1,4 @@
-# $Id: configure,v 1.7 2004/02/21 15:52:21 kiesling Exp $
+# $Id: configure,v 1.2 2007/06/21 20:10:35 kiesling Exp $
 use User::pwent;
 
 $rcs_ok = `which rcs`;
@@ -7,9 +7,9 @@ chomp $rcs_ok;
 $cwd = `pwd`;
 chomp $cwd;
 
-@httpd_confs=(qw|/etc/httpd.conf /etc/apache/httpd.conf 
+@httpd_confs=(qw|/usr/local/apache/conf/httpd.conf 
+	      /etc/httpd.conf /etc/apache/httpd.conf 
 	      /etc/apache/conf/httpd.conf
-	      /usr/local/apache/conf/httpd.conf 
 	      /usr/apache/conf/httpd.conf|);
 
 $httpd_conf_name = "";

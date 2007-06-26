@@ -44,8 +44,26 @@ and horizontal rules.
    '''http://''server_name''/quikwiki/quikwiki.cgi?words'''
 
         * Pages and templates can contain embedded Perl scripts; for example,
-the files, '''WikiHeader,''' '''WikiFooter,''' and the pages in 
-the ''eg/'' subdirectory.
+the files, 
+<%
+  print qq|<a 
+  href="http://$s/quikwiki/quikwiki.cgi?WikiHeader&action=edit">WikiHeader</a>|;
+%>,
+<%
+  print qq|<a 
+  href="http://$s/quikwiki/quikwiki.cgi?WikiFooter&action=edit">WikiFooter</a>|;
+%>,
+and the pages in 
+the ''eg/'' subdirectory.  
+
+This example is from the QuikWiki manual:
+
+Hello, World!  The date and time is: 
+<%
+$t = localtime (); $a=qq{'''$t.'''}; print lines ($a);
+%>
+
+        * If you have Mozilla or a related browser, you can view the Perl templates of the examples above, by selecting, '''"View -> Page Source,"''' from the menu.
 
         * Click on the '''Doc''' link above to view the manual.  The link uses the ''doc'' word:
 

@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-# $Id: ODBCTable.cgi,v 1.1 2004/02/20 04:43:30 kiesling Exp $
+# $Id: ODBCTable.cgi,v 1.1.1.1 2007/06/21 20:01:21 kiesling Exp $
 use UnixODBC ':all';
 my ($user, $password, $dsn, $sqlquery) = 
     ($ENV{QUERY_STRING} =~ 

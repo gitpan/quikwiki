@@ -32,17 +32,18 @@ edited pages by adding a, ".bak," extension.
 Quick Install
 
    If the quick install doesn't work for some reason, go to the, 
-   "Manual Install," section.
+   "Manual Install," section.  Also read the section, "Apache
+   Configuration Notes."
 
 1. Unpack the tar file.  
 
      tar zxvf quikwiki-<version>.tar.gz
 
-   If you're logged in without superuser privilges, you can
+   If you're logged in without superuser privileges, you can
    only install QuikWiki in the public HTML subdirectory of your 
    $HOME directory.  The directory name depends on the Web server 
    configuration.  The name should be something like, "public_html," 
-   or, "htdocs."  Ask your Web adminstrator if you're not certain.
+   or, "htdocs."  Ask your Web administrator if you're not certain.
 
    QuikWiki should also work in any server-accessible directory 
    that has, "Options +ExecCGI," enabled in httpd.conf.
@@ -113,7 +114,7 @@ Manual Installation
 
      chmod +x quikwiki.cgi
 
-3. If installing in the system's <DocumentRoot> directory:
+3. If installing system's <DocumentRoot> directory:
 
      mkdir <DocumentRoot>/quikwiki
 
@@ -130,7 +131,8 @@ Manual Installation
  
      mkdir $HOME/<public HTML directory>/quikwiki/RCS
 
-4. Copy the QuikWiki files to the destination directory.
+4. If installing the QuikWiki pages and quikwiki.cgi to
+   the document directory:
 
      cp quikwiki.cgi HomePage WikiHeader WikiFooter <DocumentRoot>/quikwiki
      cp eg/QuikReference <DocumentRoot>/quikwiki
@@ -140,7 +142,23 @@ Manual Installation
      cp quikwiki.cgi HomePage WikiHeader WikiFooter $HOME/<public_html>/quikwiki
      cp eg/QuikReference $HOME/<public_html>/quikwiki
 
-4. You can omit the script name if, "DirectoryIndex index.cgi," is 
+5.  If installing quikwiki.cgi to a script directory. These
+    examples use /usr/local/apache/cgi-bin.  In this case,
+    you also need to specify in which directory or directories
+    the pages are located.  See, "Apache Configuration Notes,"
+    below.
+
+     cp HomePage WikiHeader WikiFooter <DocumentRoot>/quikwiki
+     cp eg/QuikReference <DocumentRoot>/quikwiki
+`    cp quikwiki.cgi /usr/local/apache/cgi-bin
+
+   or
+
+     cp HomePage WikiHeader WikiFooter $HOME/<public_html>/quikwiki
+     cp eg/QuikReference $HOME/<public_html>/quikwiki
+`    cp quikwiki.cgi /usr/local/apache/cgi-bin
+
+6. You can omit the script name if, "DirectoryIndex index.cgi," is 
    set in, "httpd.conf," or the directory's, ".htaccess," file.  
    You'll need to symlink quikwiki.cgi to index.cgi.
 
@@ -152,7 +170,7 @@ Manual Installation
    won't execute the script through a symlink, you can also rename
    quikwiki.cgi to index.cgi.  Again, ask your Web administrator.
 
-5. Make sure that Apache can read and write the files.  The
+7. Make sure that Apache can read and write the files.  The
    directories and files need to be owned by the same user as 
    the HTTPD server process, or the user that owns a $HOME<public HTML>
    directory.  
@@ -279,6 +297,31 @@ to run QuikWiki or any Perl CGI script.
   # But this must still be allowed in httpd.conf:
   AllowOverride Options
 
+  #
+  #  If you installed quikwiki.cgi in a script directory
+  #  and the pages in a different directory you need
+  #  to set the environment variable $WIKIPATH in the
+  #  Web server's environment.
+  #
+
+  SetEnv WIKIPATH  "/usr/local/apache/htdocs/quikwiki:~/public_html/quikwiki"
+
+  #
+  # PassEnv allows you to pass an environment variable from the
+  # shell that starts the server.
+  #
+
+  PassEnv WIKIPATH
+
+  # Then, before starting the server, enter at the shell prompt:
+
+  WIKIPATH="/usr/local/apache/htdocs/quikwiki:~/public_html/quikwiki"; export WIKIPATH
+
+  # You can also list the directories in the quikwiki.cgi script
+  # itself.  Add the directories in the line:
+
+  unshift @wikipath, qw(./);
+
 
 Licensing
 
@@ -290,4 +333,4 @@ Licensing
   reports, and suggestions should be sent to the author, 
   rkies@cpan.org.
 
-$Id: README,v 1.13 2004/02/23 19:51:08 kiesling Exp $
+$Id: README,v 1.3 2007/06/26 04:26:53 kiesling Exp $

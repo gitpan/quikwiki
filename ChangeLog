@@ -1,0 +1,22 @@
+21-07-2007
+	Added "use CGI (:standard)" to allow correct
+	Windows newline translation, from 
+	polarzinc@yahoo.com.
+	Updated w_out, w_eval, and lines functions for
+	better handling of pages with mixed text and
+	Perl templates.
+	Fixed a bug that caused only the first occurence
+	of a word in a page to be formatted as a HTML link,
+	from polarzinc@yahoo.com.
+23-07-2007
+	Fixed w_out () and lines () functions function to handle 
+	mixed page content better, from polarzinc@yahoo.com.
+25-07-2007
+	Release 1.6.
+	Added optional paths for pages if the quikwiki.cgi
+	script is located in a script directory, like cgi-bin,
+	from polarzinc@yahoo.com.
+	
+	
+	
+	

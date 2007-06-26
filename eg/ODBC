@@ -1,5 +1,5 @@
 <%
-# $Id: ODBC,v 1.1 2003/07/28 00:53:12 kiesling Exp $
+# $Id: ODBC,v 1.1 2007/06/26 04:28:39 kiesling Exp $
 LOAD: {foreach $p (@INC) {
   if (-f "$p/UnixODBC.pm") {require "$p/UnixODBC.pm"; last LOAD;}
   }

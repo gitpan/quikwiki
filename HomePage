@@ -2,14 +2,14 @@
 
 This is the QuikWiki HomePage.  
 
-To edit this page click on '''Edit,''' above, or: 
+To edit this page click on, '''Edit,''' above, or: 
 
 <%
  print qq{<a href="http://$s/quikwiki/?$word&action=edit">};
  print qq{http://$s/quikwiki/quikwiki.cgi&action=edit</a>};
 %>
 
-The documentation is viewable on line. Click on '''Doc,''' above.
+The documentation is viewable on line. Click on, '''Doc,''' above.
 
 For a quick overview , click on  
 <%
